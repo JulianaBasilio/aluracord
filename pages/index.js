@@ -39,7 +39,7 @@ function Title(props){
             <Tag>{props.children}</Tag>
             <style jsx>{`
                 ${Tag} {
-                    color: ${appConfig.theme.colors.neutrals['000']};
+                    color: ${appConfig.theme.colors.primary[500]};
                     font-size: 24px;
                     font-weight: 600;
                 }
@@ -70,7 +70,7 @@ export default function PaginaInicial() {
           styleSheet={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             backgroundColor: appConfig.theme.colors.primary[500],
-            backgroundImage: 'url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)',
+            backgroundImage: 'url(https://www.wptunnel.com/wp-content/uploads/2021/05/wptunnel-sakura-wallpaper-4.jpg)',
             backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
           }}
         >
@@ -138,7 +138,7 @@ export default function PaginaInicial() {
                 padding: '16px',
                 backgroundColor: appConfig.theme.colors.neutrals[800],
                 border: '1px solid',
-                borderColor: appConfig.theme.colors.neutrals[999],
+                borderColor: appConfig.theme.colors.primary[500],
                 borderRadius: '10px',
                 flex: 1,
                 minHeight: '240px',
