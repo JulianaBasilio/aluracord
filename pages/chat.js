@@ -1,36 +1,51 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxOTcyOSwiZXhwIjoxOTU4ODk1NzI5fQ.nKy1YUKEMjEgWeHZozxDrW7janYJipAU62mdo7MOEHQ';
+const SUPABASE_URL = 'https://dtnhmaaeelsvsmetduus.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
-    /*
-    // Usuário
-    - Usuário digita no campo textarea
-    - Aperta enter para enviar
-    - Tem que adicionar o texto na listagem
-    
-    // Dev
-    - [X] Campo criado
-    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
-    - [X] Lista de mensagens 
-    */
+    React.useEffect(() => {
+        supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', {ascending: false})
+            .then(({ data }) => {
+                console.log('Dados da consulta: ', data);
+                setListaDeMensagens(data);
+            });
+    }, []);
+
+   
     function handleNovaMensagem(novaMensagem) {
         if(novaMensagem === ""){
             return;
         }
         const mensagem = {
-            id: listaDeMensagens.length + 1,
+            // id: listaDeMensagens.length + 1,
             de: 'JulianaBasilio',
             texto: novaMensagem,
         };
+
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                mensagem
+            ])
+            .then(({ data }) => {
+                setListaDeMensagens([
+                    data[0],
+                    ...listaDeMensagens,
+                ]);
+            });
        
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+        
         setMensagem('');
     }
 
@@ -184,7 +199,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/JulianaBasilio.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong" styleSheet={{color: appConfig.theme.colors.primary[901]}}>
                                 {mensagem.de}
