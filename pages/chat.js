@@ -2,6 +2,12 @@ import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js';
+import avatar from '../assets/images/avatar.jpg';
+import dynamic from "next/dynamic";
+
+const Header = dynamic(() => import("../components/Header"), {
+  ssr: false,
+});
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxOTcyOSwiZXhwIjoxOTU4ODk1NzI5fQ.nKy1YUKEMjEgWeHZozxDrW7janYJipAU62mdo7MOEHQ';
 const SUPABASE_URL = 'https://dtnhmaaeelsvsmetduus.supabase.co';
@@ -28,8 +34,7 @@ export default function ChatPage() {
             return;
         }
         const mensagem = {
-            // id: listaDeMensagens.length + 1,
-            de: 'JulianaBasilio',
+            de: localStorage.getItem('login'),
             texto: novaMensagem,
         };
 
@@ -47,6 +52,27 @@ export default function ChatPage() {
        
         
         setMensagem('');
+    }
+
+    async function deletarMensagem(mensagemId) {
+        await supabaseClient
+        .from('mensagens')
+        .delete()
+        .match({ id: mensagemId });
+        console.log(data);
+
+        const {data} = await supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', {ascending: false})
+            setListaDeMensagens([
+                ...data,
+            ]);
+    }
+
+    function getAvatar() {
+        const login = typeof window !== 'undefined' ? localStorage.getItem('login') : null;
+        return login ? `https://github.com/${login}.png` : avatar.src;
     }
 
     return (
@@ -73,7 +99,7 @@ export default function ChatPage() {
                     padding: '32px',
                 }}
             >
-                <Header />
+                <Header avatar={getAvatar()} />
                 <Box
                     styleSheet={{
                         position: 'relative',
@@ -86,7 +112,7 @@ export default function ChatPage() {
                         padding: '16px',
                     }}
                 >
-                    <MessageList mensagens={listaDeMensagens} />
+                    <MessageList mensagens={listaDeMensagens} onMessageDelete={deletarMensagem} />
 
                     <Box
                         as="form"
@@ -140,26 +166,8 @@ export default function ChatPage() {
     )
 }
 
-function Header() {
-    return (
-        <>
-            <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
-                <Text variant='heading5'>
-                    Chat
-                </Text>
-                <Button
-                    variant='tertiary'
-                    colorVariant='neutral'
-                    label='Logout'
-                    href="/"
-                />
-            </Box>
-        </>
-    )
-}
-
 function MessageList(props) {
-    console.log(props);
+
     return (
         <Box
             tag="ul"
@@ -181,41 +189,65 @@ function MessageList(props) {
                             borderRadius: '5px',
                             padding: '6px',
                             marginBottom: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
                             hover: {
                                 backgroundColor: appConfig.theme.colors.neutrals[700],
                             }
                         }}
                     >
-                        <Box
-                            styleSheet={{
-                                marginBottom: '8px',
-                            }}
-                        >
-                            <Image
+                        <Box>
+                            <Box
                                 styleSheet={{
-                                    width: '20px',
-                                    height: '20px',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    marginRight: '8px',
+                                    marginBottom: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center'
                                 }}
-                                src={`https://github.com/${mensagem.de}.png`}
-                            />
-                            <Text tag="strong" styleSheet={{color: appConfig.theme.colors.primary[901]}}>
-                                {mensagem.de}
-                            </Text>
-                            <Text
-                                styleSheet={{
-                                    fontSize: '10px',
-                                    marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[300],
-                                }}
-                                tag="span"
                             >
-                                {(new Date().toLocaleDateString())}
-                            </Text>
+                                <Image
+                                    styleSheet={{
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        display: 'inline-block',
+                                        marginRight: '8px',
+                                    }}
+                                    src={`https://github.com/${mensagem.de}.png`}
+                                />
+                                <Text tag="strong" styleSheet={{color: appConfig.theme.colors.primary[901]}}>
+                                    {mensagem.de}
+                                </Text>
+                                <Text
+                                    styleSheet={{
+                                        fontSize: '10px',
+                                        marginLeft: '8px',
+                                        color: appConfig.theme.colors.neutrals[300],
+                                    }}
+                                    tag="span"
+                                >
+                                    {(new Date().toLocaleDateString())}
+                                </Text>
+                            </Box>
+                            {mensagem.texto}
                         </Box>
-                        {mensagem.texto}
+                        <Button 
+                            label='x'
+                            styleSheet={{
+                                marginRight: '16px',
+                                borderRadius: '50%',
+                                padding: '5px 12px',
+                            }}
+                            buttonColors={{
+                                contrastColor: appConfig.theme.colors.neutrals["000"],
+                                mainColor: appConfig.theme.colors.primary[500],
+                                mainColorLight: appConfig.theme.colors.primary[400],
+                                mainColorStrong: appConfig.theme.colors.primary[600],
+                            }}
+                            onClick={() => {
+                                props.onMessageDelete(mensagem.id);
+                            }}
+                        />
                     </Text>
                 );
             })}

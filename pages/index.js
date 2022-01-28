@@ -2,6 +2,9 @@ import  {Box, Button, Text, TextField, Image} from '@skynexui/components';
 import React from 'react';
 import {useRouter} from 'next/router';
 import appConfig from '../config.json';
+import avatar from '../assets/images/avatar.jpg';
+
+console.log(avatar);
 
 function Title(props){
     const Tag = props.tag || 'h1';
@@ -33,7 +36,7 @@ function Title(props){
 
 export default function PaginaInicial() {
     // const username = 'JulianaBasilio';
-    const [username, setUsername] = React.useState('JulianaBasilio');
+    const [username, setUsername] = React.useState('');
     const roteamento = useRouter();
   
     return (
@@ -85,6 +88,7 @@ export default function PaginaInicial() {
                 onChange={function(event) {
                   console.log('Usuário digitou: ', event.target.value);
                   const valor = event.target.value;
+                  localStorage.setItem('login', valor);
                   setUsername(valor);
                 }}
                 fullWidth
@@ -134,7 +138,7 @@ export default function PaginaInicial() {
                   borderRadius: '50%',
                   marginBottom: '16px',
                 }}
-                src={`https://github.com/${username}.png`}
+                src={username ? `https://github.com/${username}.png` : avatar.src}
               />
               <Text
                 variant="body4"
@@ -145,7 +149,7 @@ export default function PaginaInicial() {
                   borderRadius: '1000px'
                 }}
               >
-                {username}
+                {username === '' ? 'Digite seu Github' : username}
               </Text>
             </Box>
             {/* Photo Area */}
