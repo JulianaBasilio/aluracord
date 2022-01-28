@@ -94,7 +94,7 @@ export default function ChatPage() {
                     borderRadius: '5px',
                     backgroundColor: appConfig.theme.colors.neutrals[700],
                     height: '100%',
-                    maxWidth: '95%',
+                    maxWidth: '800px',
                     maxHeight: '95vh',
                     padding: '32px',
                 }}
@@ -236,7 +236,10 @@ function MessageList(props) {
                             styleSheet={{
                                 marginRight: '16px',
                                 borderRadius: '50%',
-                                padding: '5px 12px',
+                                padding: '0',
+                                padding: 0,
+                                width: '30px',
+                                height: '30px'
                             }}
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
